@@ -2937,6 +2937,11 @@ Converter::KeyFrameListList Converter::GetKeyframeList( const std::vector<const 
     int64_t adj_start = start - 10000;
     int64_t adj_stop = stop + 10000;
 
+    if ((start == 0) && (stop == 0)) {
+        adj_start = -1000000000000000000;
+        adj_stop = 1000000000000000000;
+    }
+
     for( const AnimationCurveNode* node : nodes ) {
         ai_assert( node );
 
