@@ -14,9 +14,9 @@ IOS_SDK_DEVICE=
 XCODE_ROOT_DIR=/Applications/Xcode.app/Contents
 TOOLCHAIN=$XCODE_ROOT_DIR//Developer/Toolchains/XcodeDefault.xctoolchain
 
-BUILD_ARCHS_DEVICE="armv7 armv7s arm64"
+BUILD_ARCHS_DEVICE=" armv7s arm64"
 BUILD_ARCHS_SIMULATOR="i386 x86_64"
-BUILD_ARCHS_ALL=(armv7 armv7s arm64 i386 x86_64)
+BUILD_ARCHS_ALL=(armv7 arm64)
 
 CPP_DEV_TARGET_LIST=(miphoneos-version-min mios-simulator-version-min)
 CPP_DEV_TARGET=
@@ -45,7 +45,7 @@ build_arch()
 
     export DEVROOT=$XCODE_ROOT_DIR/Developer/Platforms/$IOS_SDK_DEVICE.platform/Developer
     export SDKROOT=$DEVROOT/SDKs/$IOS_SDK_DEVICE$IOS_SDK_VERSION.sdk
-    export CFLAGS="-arch $1 -pipe -no-cpp-precomp -stdlib=$CPP_STD_LIB -isysroot $SDKROOT -$CPP_DEV_TARGET=$IOS_SDK_TARGET -I$SDKROOT/usr/include/"
+    export CFLAGS="-arch $1 -pipe -no-cpp-precomp -stdlib=$CPP_STD_LIB -isysroot $SDKROOT -$CPP_DEV_TARGET=$IOS_SDK_TARGET -I$SDKROOT/usr/include/ -Os"
     export LDFLAGS="-L$SDKROOT/usr/lib/"
     export CPPFLAGS=$CFLAGS
     export CXXFLAGS="$CFLAGS -std=$CPP_STD"

@@ -195,7 +195,7 @@ ENDIF ( ASSIMP_BUILD_NONFREE_C4D_IMPORTER )
 # ASSIMP_BUILD_XXX_IMPORTER to FALSE for each importer
 # if this variable is set to FALSE, the user can manually enable importers by setting
 # ASSIMP_BUILD_XXX_IMPORTER to TRUE for each importer
-OPTION(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT "default value of all ASSIMP_BUILD_XXX_IMPORTER value" TRUE)
+OPTION(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT "default value of all ASSIMP_BUILD_XXX_IMPORTER value" FALSE)
 
 # macro to add the CMake Option ADD_ASSIMP_IMPORTER_<name> which enables compile of loader
 # this way selective loaders can be compiled (reduces filesize + compile time)
@@ -212,6 +212,15 @@ MACRO(ADD_ASSIMP_IMPORTER name)
     add_definitions(-DASSIMP_BUILD_NO_${name}_IMPORTER)
     add_definitions(-DASSIMP_BUILD_NO_${name}_EXPORTER)
   ENDIF()
+ENDMACRO()
+
+MACRO(ADD_ASSIMP_IMPORTER_REALY name)
+
+    LIST(APPEND ASSIMP_LOADER_SRCS ${ARGN})
+    SET(ASSIMP_IMPORTERS_ENABLED "${ASSIMP_IMPORTERS_ENABLED} ${name}")
+    SET(${name}_SRCS ${ARGN})
+    SOURCE_GROUP(${name} FILES ${ARGN})
+
 ENDMACRO()
 
 SET(ASSIMP_LOADER_SRCS "")
@@ -271,7 +280,7 @@ ADD_ASSIMP_IMPORTER( BVH
   BVHLoader.h
 )
 
-ADD_ASSIMP_IMPORTER( COLLADA
+ADD_ASSIMP_IMPORTER_REALY( COLLADA
   ColladaHelper.h
   ColladaLoader.cpp
   ColladaLoader.h
@@ -384,7 +393,7 @@ ADD_ASSIMP_IMPORTER( OFF
   OFFLoader.h
 )
 
-ADD_ASSIMP_IMPORTER( OBJ
+ADD_ASSIMP_IMPORTER_REALY( OBJ
   ObjFileData.h
   ObjFileImporter.cpp
   ObjFileImporter.h
@@ -490,7 +499,7 @@ ADD_ASSIMP_IMPORTER( XGL
 )
 
 
-ADD_ASSIMP_IMPORTER( FBX
+ADD_ASSIMP_IMPORTER_REALY( FBX
   FBXImporter.cpp
   FBXCompileConfig.h
   FBXImporter.h
