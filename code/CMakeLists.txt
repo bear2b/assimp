@@ -208,25 +208,25 @@ OPTION(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT "default value of all ASSIMP_BUILD_
 # macro to add the CMake Option ADD_ASSIMP_IMPORTER_<name> which enables compile of loader
 # this way selective loaders can be compiled (reduces filesize + compile time)
 MACRO(ADD_ASSIMP_IMPORTER name)
-  IF (ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT)
-    set(ASSIMP_IMPORTER_ENABLED TRUE)
-    IF (DEFINED ASSIMP_BUILD_${name}_IMPORTER AND NOT ASSIMP_BUILD_${name}_IMPORTER)
-      set(ASSIMP_IMPORTER_ENABLED FALSE)
-    ENDIF ()
-  ELSE ()
-    set(ASSIMP_IMPORTER_ENABLED ${ASSIMP_BUILD_${name}_IMPORTER})
-  ENDIF ()
-  IF (ASSIMP_IMPORTER_ENABLED)
-    LIST(APPEND ASSIMP_LOADER_SRCS ${ARGN})
-    SET(ASSIMP_IMPORTERS_ENABLED "${ASSIMP_IMPORTERS_ENABLED} ${name}")
-    SET(${name}_SRCS ${ARGN})
-    SOURCE_GROUP(${name} FILES ${ARGN})
-  ELSE()
-    SET(${name}_SRC "")
-    SET(ASSIMP_IMPORTERS_DISABLED "${ASSIMP_IMPORTERS_DISABLED} ${name}")
-    add_definitions(-DASSIMP_BUILD_NO_${name}_IMPORTER)
-    add_definitions(-DASSIMP_BUILD_NO_${name}_EXPORTER)
-  ENDIF()
+  #IF (ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT)
+  #  set(ASSIMP_IMPORTER_ENABLED TRUE)
+  #  IF (DEFINED ASSIMP_BUILD_${name}_IMPORTER AND NOT ASSIMP_BUILD_${name}_IMPORTER)
+  #    set(ASSIMP_IMPORTER_ENABLED FALSE)
+  #  ENDIF ()
+  #ELSE ()
+  #  set(ASSIMP_IMPORTER_ENABLED ${ASSIMP_BUILD_${name}_IMPORTER})
+  #ENDIF ()
+  #IF (ASSIMP_IMPORTER_ENABLED)
+  #  LIST(APPEND ASSIMP_LOADER_SRCS ${ARGN})
+  #  SET(ASSIMP_IMPORTERS_ENABLED "${ASSIMP_IMPORTERS_ENABLED} ${name}")
+  #  SET(${name}_SRCS ${ARGN})
+  #  SOURCE_GROUP(${name} FILES ${ARGN})
+  #ELSE()
+  #  SET(${name}_SRC "")
+  #  SET(ASSIMP_IMPORTERS_DISABLED "${ASSIMP_IMPORTERS_DISABLED} ${name}")
+  #  add_definitions(-DASSIMP_BUILD_NO_${name}_IMPORTER)
+  #  add_definitions(-DASSIMP_BUILD_NO_${name}_EXPORTER)
+  #ENDIF()
 ENDMACRO()
 
 MACRO(ADD_ASSIMP_IMPORTER_REALY name)
@@ -693,7 +693,7 @@ ADD_ASSIMP_IMPORTER( X3D
   X3DVocabulary.cpp
 )
 
-ADD_ASSIMP_IMPORTER( GLTF
+ADD_ASSIMP_IMPORTER_REALY( GLTF
   glTFAsset.h
   glTFAsset.inl
   glTFAssetWriter.h
@@ -732,7 +732,7 @@ ADD_ASSIMP_IMPORTER( MMD
   MMDVmdParser.h
 )
 
-SET( Step_SRCS
+ADD_ASSIMP_IMPORTER( Step_SRCS
     STEPFile.h
     Importer/StepFile/StepFileImporter.h
     Importer/StepFile/StepFileImporter.cpp
@@ -743,7 +743,7 @@ SET( Step_SRCS
     StepExporter.h
     StepExporter.cpp
 )
-SOURCE_GROUP( Step FILES ${Step_SRCS})
+
 
 SET( Exporter_SRCS
   Exporter.cpp
@@ -796,7 +796,7 @@ SET( ziplib_SRCS
 
 SOURCE_GROUP( ziplib FILES ${ziplib_SRCS} )
 
-SET ( openddl_parser_SRCS
+ADD_ASSIMP_IMPORTER ( openddl_parser_SRCS
   ../contrib/openddlparser/code/OpenDDLParser.cpp
   ../contrib/openddlparser/code/DDLNode.cpp
   ../contrib/openddlparser/code/OpenDDLCommon.cpp
@@ -811,9 +811,9 @@ SET ( openddl_parser_SRCS
   ../contrib/openddlparser/include/openddlparser/DDLNode.h
   ../contrib/openddlparser/include/openddlparser/Value.h
 )
-SOURCE_GROUP( openddl_parser FILES ${openddl_parser_SRCS})
 
-SET ( open3dgc_SRCS
+
+ADD_ASSIMP_IMPORTER ( open3dgc_SRCS
   ../contrib/Open3DGC/o3dgcAdjacencyInfo.h
   ../contrib/Open3DGC/o3dgcArithmeticCodec.cpp
   ../contrib/Open3DGC/o3dgcArithmeticCodec.h
@@ -844,7 +844,7 @@ SET ( open3dgc_SRCS
   ../contrib/Open3DGC/o3dgcVector.h
   ../contrib/Open3DGC/o3dgcVector.inl
 )
-SOURCE_GROUP( open3dgc FILES ${open3dgc_SRCS})
+
 
 # Check dependencies for glTF importer with Open3DGC-compression.
 # RT-extensions is used in "contrib/Open3DGC/o3dgcTimer.h" for collecting statistics. Pointed file

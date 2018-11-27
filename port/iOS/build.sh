@@ -22,7 +22,7 @@ BUILD_TYPE=Release
 ################################################
 # 		 Minimum iOS deployment target version
 ################################################
-MIN_IOS_VERSION="6.0"
+MIN_IOS_VERSION="9.0"
 
 IOS_SDK_TARGET=$MIN_IOS_VERSION
 XCODE_ROOT_DIR=$(xcode-select  --print-path)
@@ -31,9 +31,9 @@ TOOLCHAIN=$XCODE_ROOT_DIR/Toolchains/XcodeDefault.xctoolchain
 CMAKE_C_COMPILER=$(xcrun -find cc)
 CMAKE_CXX_COMPILER=$(xcrun -find c++)
 
-BUILD_ARCHS_DEVICE="arm64 armv7s armv7"
-BUILD_ARCHS_SIMULATOR="x86_64 i386"
-BUILD_ARCHS_ALL=($BUILD_ARCHS_DEVICE $BUILD_ARCHS_SIMULATOR)
+BUILD_ARCHS_DEVICE="arm64 armv7s"
+BUILD_ARCHS_SIMULATOR=""
+BUILD_ARCHS_ALL=($BUILD_ARCHS_DEVICE)
 
 CPP_DEV_TARGET_LIST=(miphoneos-version-min mios-simulator-version-min)
 CPP_DEV_TARGET=
@@ -68,11 +68,13 @@ build_arch()
      if [[ "$BUILD_TYPE" =~ "Debug" ]]; then
       export CFLAGS="$CFLAGS -Og"
      else
-	     export CFLAGS="$CFLAGS -O3"
+	     export CFLAGS="$CFLAGS -O3 -DNDEBUG"
      fi
     export LDFLAGS="-arch $1 -isysroot $SDKROOT -L$SDKROOT/usr/lib/"
     export CPPFLAGS="$CFLAGS"
     export CXXFLAGS="$CFLAGS -std=$CPP_STD"
+
+    echo "$CFLAGS"
 
     rm CMakeCache.txt
     
@@ -85,8 +87,9 @@ build_arch()
     echo "[!] Building $1 library"
 
     xcrun -run make clean
-    xcrun -run make assimp -j 8 -l    
-    
+    # xcrun -run -v -l make assimp -j 8 -l   
+    $XCODE_ROOT_DIR/usr/bin/make assimp -j 8 -l
+
     if [[ "$BUILD_SHARED_LIBS" =~ "ON" ]]; then
     	echo "[!] Moving built dynamic libraries into: $BUILD_DIR/$1/"
     	mv ./lib/*.dylib  $BUILD_DIR/$1/
