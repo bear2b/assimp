@@ -7,7 +7,7 @@
 BUILD_DIR="./lib/iOS"
 
 IOS_SDK_VERSION=
-IOS_SDK_TARGET=6.0
+IOS_SDK_TARGET=10.0
 #(iPhoneOS iPhoneSimulator) -- determined from arch
 IOS_SDK_DEVICE=
 
@@ -15,7 +15,7 @@ XCODE_ROOT_DIR=/Applications/Xcode.app/Contents
 TOOLCHAIN=$XCODE_ROOT_DIR//Developer/Toolchains/XcodeDefault.xctoolchain
 
 BUILD_ARCHS_DEVICE=" armv7s arm64"
-BUILD_ARCHS_SIMULATOR="i386 x86_64"
+BUILD_ARCHS_SIMULATOR=""
 BUILD_ARCHS_ALL=(armv7 arm64)
 
 CPP_DEV_TARGET_LIST=(miphoneos-version-min mios-simulator-version-min)
@@ -52,7 +52,16 @@ build_arch()
 
     rm CMakeCache.txt
 
-    cmake  -G 'Unix Makefiles' -DCMAKE_TOOLCHAIN_FILE=./port/iOS/IPHONEOS_$(echo $1 | tr '[:lower:]' '[:upper:]')_TOOLCHAIN.cmake -DENABLE_BOOST_WORKAROUND=ON -DBUILD_SHARED_LIBS=OFF
+    cmake  -G 'Unix Makefiles' -DCMAKE_TOOLCHAIN_FILE=./port/iOS/IPHONEOS_$(echo $1 | tr '[:lower:]' '[:upper:]')_TOOLCHAIN.cmake \
+     -DENABLE_BOOST_WORKAROUND=ON \
+     -DBUILD_SHARED_LIBS=OFF \
+     -DASSIMP_BUILD_GLTF_IMPORTER=ON \
+     -DASSIMP_BUILD_ASSIMP_TOOLS=OFF \
+     -DANDROID_ABI=arm64-v8a \
+     -DASSIMP_BUILD_TESTS=OFF \
+     -DCMAKE_CXX_FLAGS_RELEASE=-g0 \
+     -DASSIMP_NO_EXPORT=ON \
+     -DCMAKE_BUILD_TYPE="release" \
 
     echo "[!] Building $1 library"
 
