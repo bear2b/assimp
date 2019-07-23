@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2018, assimp team
+Copyright (c) 2006-2019, assimp team
 
 
 
@@ -70,5 +70,4 @@ TEST_F(ExporterTest, ProgressHandlerTest) {
     Exporter exporter;
     TestProgressHandler *ph(new TestProgressHandler);
     exporter.SetProgressHandler(ph);
-    delete ph;
 }

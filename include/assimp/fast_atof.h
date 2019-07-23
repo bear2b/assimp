@@ -34,7 +34,7 @@
 
 namespace Assimp {
 
-const double fast_atof_table[16] =  {  // we write [16] here instead of [] to work around a swig bug
+const double fast_atof_table[21] =  {  // we write [16] here instead of [] to work around a swig bug
     0.0,
     0.1,
     0.01,
@@ -50,7 +50,12 @@ const double fast_atof_table[16] =  {  // we write [16] here instead of [] to wo
     0.000000000001,
     0.0000000000001,
     0.00000000000001,
-    0.000000000000001
+    0.000000000000001,
+    0.0000000000000001,
+    0.00000000000000001,
+    0.000000000000000001,
+    0.0000000000000000001,
+    0.00000000000000000001
 };
 
 
@@ -248,7 +253,7 @@ int64_t strtol10_64(const char* in, const char** out = 0, unsigned int* max_inou
 }
 
 // Number of relevant decimals for floating-point parsing.
-#define AI_FAST_ATOF_RELAVANT_DECIMALS 15
+#define AI_FAST_ATOF_RELAVANT_DECIMALS 20
 
 // ------------------------------------------------------------------------------------
 //! Provides a fast function for converting a string into a float,
