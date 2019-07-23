@@ -7,16 +7,16 @@
 BUILD_DIR="./lib/iOS"
 
 IOS_SDK_VERSION=
-IOS_SDK_TARGET=10.0
+IOS_SDK_TARGET=11.0
 #(iPhoneOS iPhoneSimulator) -- determined from arch
 IOS_SDK_DEVICE=
 
 XCODE_ROOT_DIR=/Applications/Xcode.app/Contents
 TOOLCHAIN=$XCODE_ROOT_DIR//Developer/Toolchains/XcodeDefault.xctoolchain
 
-BUILD_ARCHS_DEVICE=" armv7s arm64"
+BUILD_ARCHS_DEVICE="arm64"
 BUILD_ARCHS_SIMULATOR=""
-BUILD_ARCHS_ALL=(armv7 arm64)
+BUILD_ARCHS_ALL=(arm64)
 
 CPP_DEV_TARGET_LIST=(miphoneos-version-min mios-simulator-version-min)
 CPP_DEV_TARGET=
@@ -128,5 +128,3 @@ if [[ "$DEPLOY_FAT" -eq 1 ]]; then
     lipo $LIPO_ARGS
     echo "[!] Done! The fat binary can be found at $BUILD_DIR"
 fi
-
-
