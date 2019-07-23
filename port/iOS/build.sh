@@ -22,7 +22,7 @@ BUILD_TYPE=Release
 ################################################
 # 		 Minimum iOS deployment target version
 ################################################
-MIN_IOS_VERSION="6.0"
+MIN_IOS_VERSION="11.0"
 
 IOS_SDK_TARGET=$MIN_IOS_VERSION
 XCODE_ROOT_DIR=$(xcode-select  --print-path)
@@ -31,11 +31,11 @@ TOOLCHAIN=$XCODE_ROOT_DIR/Toolchains/XcodeDefault.xctoolchain
 CMAKE_C_COMPILER=$(xcrun -find cc)
 CMAKE_CXX_COMPILER=$(xcrun -find c++)
 
-BUILD_ARCHS_DEVICE="arm64e arm64 armv7s armv7"
+BUILD_ARCHS_DEVICE="arm64" # arm64e armv7s armv7"
 BUILD_ARCHS_SIMULATOR="x86_64 i386"
-BUILD_ARCHS_ALL=($BUILD_ARCHS_DEVICE $BUILD_ARCHS_SIMULATOR)
+BUILD_ARCHS_ALL=($BUILD_ARCHS_DEVICE) # $BUILD_ARCHS_SIMULATOR)
 
-CPP_DEV_TARGET_LIST=(miphoneos-version-min mios-simulator-version-min)
+CPP_DEV_TARGET_LIST=(miphoneos-version-min) #mios-simulator-version-min)
 CPP_DEV_TARGET=
 CPP_STD_LIB_LIST=(libc++ libstdc++)
 CPP_STD_LIB=
@@ -76,7 +76,22 @@ build_arch()
 
     rm CMakeCache.txt
     
-    CMAKE_CLI_INPUT="-DCMAKE_C_COMPILER=$CMAKE_C_COMPILER -DCMAKE_CXX_COMPILER=$CMAKE_CXX_COMPILER -DCMAKE_TOOLCHAIN_FILE=./port/iOS/IPHONEOS_$(echo $1 | tr '[:lower:]' '[:upper:]')_TOOLCHAIN.cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DENABLE_BOOST_WORKAROUND=ON -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS"
+    CMAKE_CLI_INPUT="-DCMAKE_C_COMPILER=$CMAKE_C_COMPILER \
+    -DCMAKE_CXX_COMPILER=$CMAKE_CXX_COMPILER \
+    -DCMAKE_TOOLCHAIN_FILE=./port/iOS/IPHONEOS_$(echo $1 | tr '[:lower:]' '[:upper:]')_TOOLCHAIN.cmake \
+    -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+    -DENABLE_BOOST_WORKAROUND=ON \
+    -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
+    -DASSIMP_BUILD_GLTF_IMPORTER=ON \
+    -DASSIMP_BUILD_OBJ_IMPORTER=ON \
+    -DASSIMP_BUILD_COLLADA_IMPORTER=ON \
+    -DASSIMP_BUILD_FBX_IMPORTER=ON \
+    -DASSIMP_BUILD_ASSIMP_TOOLS=OFF \
+    -DASSIMP_BUILD_TESTS=OFF \
+    -DCMAKE_CXX_FLAGS_RELEASE=-g0 \
+    -DASSIMP_NO_EXPORT=ON \
+    -DASSIMP_BUILD_ZLIB=ON \
+    -DASSIMP_ANDROID_JNIIOSYSTEM=ON "
     
     echo "[!] Running CMake with -G 'Unix Makefiles' $CMAKE_CLI_INPUT"
     
