@@ -64,7 +64,7 @@ build_arch()
     #export CPP="$CC -E"
     export DEVROOT=$XCODE_ROOT_DIR/Platforms/$IOS_SDK_DEVICE.platform/Developer
     export SDKROOT=$DEVROOT/SDKs/$IOS_SDK_DEVICE$IOS_SDK_VERSION.sdk
-    export CFLAGS="-arch $1 -pipe -no-cpp-precomp -stdlib=$CPP_STD_LIB -isysroot $SDKROOT -I$SDKROOT/usr/include/ -miphoneos-version-min=$IOS_SDK_TARGET"
+    export CFLAGS="-arch $1 -pipe -no-cpp-precomp -fembed-bitcode -stdlib=$CPP_STD_LIB -isysroot $SDKROOT -I$SDKROOT/usr/include/ -miphoneos-version-min=$IOS_SDK_TARGET"
      if [[ "$BUILD_TYPE" =~ "Debug" ]]; then
       export CFLAGS="$CFLAGS -Og"
      else
@@ -74,7 +74,7 @@ build_arch()
     export CPPFLAGS="$CFLAGS"
     export CXXFLAGS="$CFLAGS -std=$CPP_STD"
 
-    rm CMakeCache.txt
+    #rm CMakeCache.txt
     
     CMAKE_CLI_INPUT="-DCMAKE_C_COMPILER=$CMAKE_C_COMPILER \
     -DCMAKE_CXX_COMPILER=$CMAKE_CXX_COMPILER \
@@ -90,8 +90,7 @@ build_arch()
     -DASSIMP_BUILD_TESTS=OFF \
     -DCMAKE_CXX_FLAGS_RELEASE=-g0 \
     -DASSIMP_NO_EXPORT=ON \
-    -DASSIMP_BUILD_ZLIB=ON \
-    -DASSIMP_ANDROID_JNIIOSYSTEM=ON "
+    -DASSIMP_BUILD_ZLIB=ON "
     
     echo "[!] Running CMake with -G 'Unix Makefiles' $CMAKE_CLI_INPUT"
     
@@ -102,6 +101,8 @@ build_arch()
     xcrun -run make clean
     xcrun -run make assimp -j 8 -l    
     
+    rm CMakeCache.txt
+
     if [[ "$BUILD_SHARED_LIBS" =~ "ON" ]]; then
     	echo "[!] Moving built dynamic libraries into: $BUILD_DIR/$1/"
     	mv ./lib/*.dylib  $BUILD_DIR/$1/

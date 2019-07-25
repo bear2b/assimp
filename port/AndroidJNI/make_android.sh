@@ -1,13 +1,13 @@
 ANDROID_NDK_PATH=~/ndk/android-ndk-r20 
-ANDROID_CMAKE_PATH=${ANDROID_NDK_PATH}/build/cmake/android.toolchain.cmake  
+ANDROID_CMAKE_PATH=${ANDROID_NDK_PATH}/build/cmake/android.toolchain.cmake 
+ALL_ABIS=(armeabi-v7a arm64-v8a) 
 #cmakeontrib\android-cmake
 
-#rmdir /s /q build
+BUILD_DIR="./build"
+LIBS_DIR="../../../lib/Android"
+LIB_NAME="libassimp.so"
 
 function build_assimp {
-
-mkdir build
-cd build
 
   cmake -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_PATH}/build/cmake/android.toolchain.cmake \
     -DANDROID_NATIVE_API_LEVEL=${ANDROID_API} \
@@ -23,17 +23,10 @@ cd build
     -DCMAKE_BUILD_TYPE="release" \
     -G 'Unix Makefiles' \
     ../../..  
-  
+
   #  -DASSIMP_ANDROID_JNIIOSYSTEM=ON \
   
     make -j8
-    
-    mkdir ../built_libs
-    mkdir ../built_libs/${ANDROID_ABI}
-    mv ./code/libassimp.so ../built_libs/${ANDROID_ABI}/libassimp.so
-
-    cd ../
-    rm -r ./build
 }
 ######################################
 unset CFLAGS CPPFLAGS CXXFLAGS
@@ -51,8 +44,18 @@ ANDROID_API=android-21
 
 ######################################
 
-ANDROID_ABI=armeabi-v7a
-build_assimp
+for ANDROID_ABI in ${ALL_ABIS[*]}; do
+  echo "Creating folder: $BUILD_DIR"
+  mkdir ${BUILD_DIR}
+  cd ${BUILD_DIR}
+  echo "Building for ABI: $ANDROID_ABI" 
+  build_assimp $ANDROID_ABI
 
-ANDROID_ABI=arm64-v8a
-build_assimp
+  mkdir ${LIBS_DIR}
+  mkdir ${LIBS_DIR}/${ANDROID_ABI}
+  mv ./code/libassimp.so ${LIBS_DIR}/${ANDROID_ABI}/libassimp.so
+
+  cd ../
+  rm -r ${BUILD_DIR}
+  #rm ./lib/libassimp.a
+done
