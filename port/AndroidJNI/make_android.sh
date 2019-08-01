@@ -56,6 +56,6 @@ for ANDROID_ABI in ${ALL_ABIS[*]}; do
   mv ./code/libassimp.so ${LIBS_DIR}/${ANDROID_ABI}/libassimp.so
 
   cd ../
-  rm -r ${BUILD_DIR}
+  rm -rf ${BUILD_DIR}
   #rm ./lib/libassimp.a
 done
