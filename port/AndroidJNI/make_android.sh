@@ -4,7 +4,6 @@ ALL_ABIS=(armeabi-v7a arm64-v8a)
 #cmakeontrib\android-cmake
 
 BUILD_DIR="./build"
-LIBS_DIR="../../../lib/Android"
 LIB_NAME="libassimp.so"
 
 function build_assimp {
@@ -16,7 +15,8 @@ function build_assimp {
     -DASSIMP_BUILD_OBJ_IMPORTER=ON \
     -DASSIMP_BUILD_FBX_IMPORTER=ON \
     -DASSIMP_BUILD_ASSIMP_TOOLS=OFF \
-    -DANDROID_ABI=${ANDROID_ABI}\
+    -DANDROID_ABI=${ANDROID_ABI} \
+    -DASSIMP_BUILD_ZLIB=ON \
     -DASSIMP_BUILD_TESTS=OFF \
     -DCMAKE_CXX_FLAGS_RELEASE=-g0 \
     -DASSIMP_NO_EXPORT=ON \
@@ -41,21 +41,22 @@ export CXXFLAGS="$CFLAGS -std=$CPP_STD"
 
 ANDROID_API=android-21
 
-
 ######################################
-
 for ANDROID_ABI in ${ALL_ABIS[*]}; do
   echo "Creating folder: $BUILD_DIR"
   mkdir ${BUILD_DIR}
+  mkdir libs
+  mkdir ./libs/${ANDROID_ABI}
+
   cd ${BUILD_DIR}
+  
   echo "Building for ABI: $ANDROID_ABI" 
   build_assimp $ANDROID_ABI
 
-  mkdir ${LIBS_DIR}
-  mkdir ${LIBS_DIR}/${ANDROID_ABI}
-  mv ./code/libassimp.so ${LIBS_DIR}/${ANDROID_ABI}/libassimp.so
+  mv ./code/libassimp.so ../libs/${ANDROID_ABI}/
+  mv ./include/assimp/config.h ../libs/${ANDROID_ABI}/
 
-  cd ../
+  cd ..
   rm -rf ${BUILD_DIR}
-  #rm ./lib/libassimp.a
+
 done

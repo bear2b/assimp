@@ -73,6 +73,7 @@ build_arch()
     export LDFLAGS="-arch $1 -isysroot $SDKROOT -L$SDKROOT/usr/lib/"
     export CPPFLAGS="$CFLAGS"
     export CXXFLAGS="$CFLAGS -std=$CPP_STD"
+    export OTHER_CFLAGS="-fembed-bitcode"
 
     #rm CMakeCache.txt
     
