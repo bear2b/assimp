@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2019, assimp team
+Copyright (c) 2006-2020, assimp team
 
 
 
@@ -212,7 +212,7 @@ bool CalcTangentsProcess::ProcessMesh( aiMesh* pMesh, unsigned int meshIndex)
             // project tangent and bitangent into the plane formed by the vertex' normal
             aiVector3D localTangent = tangent - meshNorm[p] * (tangent * meshNorm[p]);
             aiVector3D localBitangent = bitangent - meshNorm[p] * (bitangent * meshNorm[p]);
-            localTangent.Normalize(); localBitangent.Normalize();
+            localTangent.NormalizeSafe(); localBitangent.NormalizeSafe();
 
             // reconstruct tangent/bitangent according to normal and bitangent/tangent when it's infinite or NaN.
             bool invalid_tangent = is_special_float(localTangent.x) || is_special_float(localTangent.y) || is_special_float(localTangent.z);
@@ -220,10 +220,10 @@ bool CalcTangentsProcess::ProcessMesh( aiMesh* pMesh, unsigned int meshIndex)
             if (invalid_tangent != invalid_bitangent) {
                 if (invalid_tangent) {
                     localTangent = meshNorm[p] ^ localBitangent;
-                    localTangent.Normalize();
+                    localTangent.NormalizeSafe();
                 } else {
                     localBitangent = localTangent ^ meshNorm[p];
-                    localBitangent.Normalize();
+                    localBitangent.NormalizeSafe();
                 }
             }
 
@@ -238,7 +238,7 @@ bool CalcTangentsProcess::ProcessMesh( aiMesh* pMesh, unsigned int meshIndex)
     // FIX: check whether we can reuse the SpatialSort of a previous step
     SpatialSort* vertexFinder = NULL;
     SpatialSort  _vertexFinder;
-    float posEpsilon;
+    float posEpsilon = 10e-6f;
     if (shared)
     {
         std::vector<std::pair<SpatialSort,float> >* avf;

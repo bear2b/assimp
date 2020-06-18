@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2019, assimp team
+Copyright (c) 2006-2020, assimp team
 
 
 
@@ -373,7 +373,7 @@ int JoinVerticesProcess::ProcessMesh( aiMesh* pMesh, unsigned int meshIndex)
     }
 
     if (!DefaultLogger::isNullLogger() && DefaultLogger::get()->getLogSeverity() == Logger::VERBOSE)    {
-        ASSIMP_LOG_DEBUG_F(
+        ASSIMP_LOG_VERBOSE_DEBUG_F(
             "Mesh ",meshIndex,
             " (",
             (pMesh->mName.length ? pMesh->mName.data : "unnamed"),
@@ -430,31 +430,6 @@ int JoinVerticesProcess::ProcessMesh( aiMesh* pMesh, unsigned int meshIndex)
 
             bone->mWeights = new aiVertexWeight[bone->mNumWeights];
             memcpy( bone->mWeights, &newWeights[0], bone->mNumWeights * sizeof( aiVertexWeight));
-        }
-        else {
-
-            /*  NOTE:
-             *
-             *  In the algorithm above we're assuming that there are no vertices
-             *  with a different bone weight setup at the same position. That wouldn't
-             *  make sense, but it is not absolutely impossible. SkeletonMeshBuilder
-             *  for example generates such input data if two skeleton points
-             *  share the same position. Again this doesn't make sense but is
-             *  reality for some model formats (MD5 for example uses these special
-             *  nodes as attachment tags for its weapons).
-             *
-             *  Then it is possible that a bone has no weights anymore .... as a quick
-             *  workaround, we're just removing these bones. If they're animated,
-             *  model geometry might be modified but at least there's no risk of a crash.
-             */
-            delete bone;
-            --pMesh->mNumBones;
-            for (unsigned int n = a; n < pMesh->mNumBones; ++n)  {
-                pMesh->mBones[n] = pMesh->mBones[n+1];
-            }
-
-            --a;
-            ASSIMP_LOG_WARN("Removing bone -> no weights remaining");
         }
     }
     return pMesh->mNumVertices;

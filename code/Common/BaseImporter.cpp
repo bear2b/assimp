@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2019, assimp team
+Copyright (c) 2006-2020, assimp team
 
 
 
@@ -67,7 +67,20 @@ using namespace Assimp;
 // Constructor to be privately used by Importer
 BaseImporter::BaseImporter() AI_NO_EXCEPT
 : m_progress() {
-    // nothing to do here
+    /**
+    * Assimp Importer
+    * unit conversions available
+    * if you need another measurment unit add it below.
+    * it's currently defined in assimp that we prefer meters.
+    *
+    * NOTE: Initialised here rather than in the header file
+    * to workaround a VS2013 bug with brace initialisers
+    * */
+    importerUnits[ImporterUnits::M] = 1.0;
+    importerUnits[ImporterUnits::CM] = 0.01;
+    importerUnits[ImporterUnits::MM] = 0.001;
+    importerUnits[ImporterUnits::INCHES] = 0.0254;
+    importerUnits[ImporterUnits::FEET] = 0.3048;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -76,9 +89,25 @@ BaseImporter::~BaseImporter() {
     // nothing to do here
 }
 
+void BaseImporter::UpdateImporterScale( Importer* pImp )
+{
+    ai_assert(pImp != nullptr);
+    ai_assert(importerScale != 0.0);
+    ai_assert(fileScale != 0.0);
+
+    double activeScale = importerScale * fileScale;
+
+    // Set active scaling
+    pImp->SetPropertyFloat( AI_CONFIG_APP_SCALE_KEY, static_cast<float>( activeScale) );
+
+    ASSIMP_LOG_DEBUG_F("UpdateImporterScale scale set: %f", activeScale );
+}
+
 // ------------------------------------------------------------------------------------------------
 // Imports the given file and returns the imported data.
-aiScene* BaseImporter::ReadFile(const Importer* pImp, const std::string& pFile, IOSystem* pIOHandler) {
+aiScene* BaseImporter::ReadFile(Importer* pImp, const std::string& pFile, IOSystem* pIOHandler) {
+
+
     m_progress = pImp->GetProgressHandler();
     if (nullptr == m_progress) {
         return nullptr;
@@ -100,6 +129,11 @@ aiScene* BaseImporter::ReadFile(const Importer* pImp, const std::string& pFile, 
     {
         InternReadFile( pFile, sc.get(), &filter);
 
+        // Calculate import scale hook - required because pImp not available anywhere else
+        // passes scale into ScaleProcess
+        UpdateImporterScale(pImp);
+
+
     } catch( const std::exception& err )    {
         // extract error description
         m_ErrorText = err.what();
@@ -112,7 +146,7 @@ aiScene* BaseImporter::ReadFile(const Importer* pImp, const std::string& pFile, 
 }
 
 // ------------------------------------------------------------------------------------------------
-void BaseImporter::SetupProperties(const Importer* /*pImp*/)
+void BaseImporter::SetupProperties(const Importer* )
 {
     // the default implementation does nothing
 }
@@ -157,7 +191,7 @@ void BaseImporter::GetExtensionList(std::set<std::string>& extensions) {
     }
 
     std::unique_ptr<IOStream> pStream (pIOHandler->Open(pFile));
-    if (pStream.get() ) {
+    if (pStream) {
         // read 200 characters from the file
         std::unique_ptr<char[]> _buffer (new char[searchBytes+1 /* for the '\0' */]);
         char *buffer( _buffer.get() );
@@ -249,7 +283,6 @@ std::string BaseImporter::GetExtension( const std::string& file ) {
         return "";
     }
 
-
     // thanks to Andy Maloney for the hint
     std::string ret = file.substr( pos + 1 );
     std::transform( ret.begin(), ret.end(), ret.begin(), ToLower<char>);
@@ -275,7 +308,7 @@ std::string BaseImporter::GetExtension( const std::string& file ) {
     };
     magic = reinterpret_cast<const char*>(_magic);
     std::unique_ptr<IOStream> pStream (pIOHandler->Open(pFile));
-    if (pStream.get() ) {
+    if (pStream) {
 
         // skip to offset
         pStream->Seek(offset,aiOrigin_SET);
@@ -569,7 +602,7 @@ unsigned int BatchLoader::AddLoadRequest(const std::string& file,
     }
 
     // no, we don't have it. So add it to the queue ...
-    m_data->requests.push_back(LoadRequest(file,steps,map, m_data->next_id));
+    m_data->requests.emplace_back(file, steps, map, m_data->next_id);
     return m_data->next_id++;
 }
 
@@ -587,6 +620,8 @@ aiScene* BatchLoader::GetImport( unsigned int which )
     }
     return nullptr;
 }
+
+
 
 // ------------------------------------------------------------------------------------------------
 void BatchLoader::LoadAll()
