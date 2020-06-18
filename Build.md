@@ -1,6 +1,6 @@
 # Build Instructions
 ## Bear build scripts 
-Can be found in port/AndroidJNI and port/iOS folders for each platform respectively
+Can be found in port/AndroidJNI and port/iOS folders for each platform respectively.
 The results of build for iOS is in lib/iOS 
 The results of build for Android is in port/AndroiJNI/libs
 
