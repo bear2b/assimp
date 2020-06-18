@@ -1,4 +1,4 @@
-ANDROID_NDK_PATH=~/ndk/android-ndk-r20 
+ANDROID_NDK_PATH=~/ndk/android-ndk-r18b
 ANDROID_CMAKE_PATH=${ANDROID_NDK_PATH}/build/cmake/android.toolchain.cmake 
 ALL_ABIS=(armeabi-v7a arm64-v8a) 
 #cmakeontrib\android-cmake
@@ -10,8 +10,8 @@ function build_assimp {
 
   cmake -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_PATH}/build/cmake/android.toolchain.cmake \
     -DANDROID_NATIVE_API_LEVEL=${ANDROID_API} \
+    -DASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT=OFF \
     -DASSIMP_BUILD_GLTF_IMPORTER=ON \
-    -DASSIMP_BUILD_COLLADA_IMPORTER=ON \
     -DASSIMP_BUILD_OBJ_IMPORTER=ON \
     -DASSIMP_BUILD_FBX_IMPORTER=ON \
     -DASSIMP_BUILD_ASSIMP_TOOLS=OFF \
@@ -53,7 +53,7 @@ for ANDROID_ABI in ${ALL_ABIS[*]}; do
   echo "Building for ABI: $ANDROID_ABI" 
   build_assimp $ANDROID_ABI
 
-  mv ./code/libassimp.so ../libs/${ANDROID_ABI}/
+  mv ./bin/libassimp.so ../libs/${ANDROID_ABI}/
   mv ./include/assimp/config.h ../libs/${ANDROID_ABI}/
 
   cd ..
